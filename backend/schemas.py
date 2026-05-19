@@ -13,4 +13,4 @@ class LogEvent(BaseModel):
 class ParseResponse(BaseModel):
     eventCount: int
     services: List[str]
-    events: List[str]
+    events: List[LogEvent]

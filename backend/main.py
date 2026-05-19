@@ -1,6 +1,6 @@
 from fastapi import FastAPI, UploadFile, File
 from schemas import ParseResponse
-from parser import parseLogs
+from parser import parseLog
 
 app = FastAPI(title = "IntelligentTrace API")
 
@@ -16,7 +16,7 @@ async def parseFile(file: UploadFile = File(...)):
 
     text = content.decode("utf-8", errors = "ignore")
 
-    events = parseLogs(text)
+    events = parseLog(text)
 
     services = sorted(
         list({event.service for event in events if event.service is not None})

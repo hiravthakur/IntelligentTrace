@@ -10,6 +10,19 @@ SEVERITY_KEYWORDS = {
 
 def detectSeverity(input: str) -> str:
     lower = input.lower()
+    upper = input.upper()
+
+    if "ERROR" in upper:
+        return "ERROR"
+    
+    if "WARN" in upper:
+        return "WARN"
+    
+    if "WARNING" in upper:
+        return "WARN"
+    
+    if "INFO" in upper:
+        return "INFO"
 
     for severity, keywords in SEVERITY_KEYWORDS.items():
         if any(x in lower for x in keywords):
