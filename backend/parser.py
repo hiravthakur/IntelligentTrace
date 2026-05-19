@@ -1,5 +1,5 @@
 import re
-from typing import List
+from typing import List, Optional
 from schemas import LogEvent
 
 SEVERITY_KEYWORDS = {
@@ -17,7 +17,7 @@ def detectSeverity(input: str) -> str:
     
     return "INFO"
 
-def extractTimestamp(input: str) -> str | None:
+def extractTimestamp(input: str) -> Optional[str]:
     patterns = [
         r"\d{2}:\d{2}:\d{2}",
         r"\d{2}:\d{2}",
@@ -32,7 +32,7 @@ def extractTimestamp(input: str) -> str | None:
     
     return None
 
-def extractService(input: str) -> str | None:
+def extractService(input: str) -> Optional[str]:
     patterns = [
           r"\[(.*?)\]",
         r"service=([a-zA-Z0-9_-]+)",
