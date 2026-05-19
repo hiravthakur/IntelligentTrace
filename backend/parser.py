@@ -1,5 +1,6 @@
 import re
 from typing import List, Optional
+
 from schemas import LogEvent
 
 SEVERITY_KEYWORDS = {
