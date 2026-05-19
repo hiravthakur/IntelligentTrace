@@ -1,5 +1,5 @@
 from typing import List, Dict, Optional
-from schemas import LogEvent, AnalysisResponse, SummaryResponse, TimeLineItem
+from schemas import LogEvent, AnalysisResponse, SummaryResponse, TimeLineItem, DependencyEdge
 
 def countBySeverity(events: List[LogEvent], severity: str) -> int:
     temp = 0
@@ -104,6 +104,45 @@ def recommendations(events: List[LogEvent]) -> List[str]:
 
     return recs
 
+def buildServiceDependencies(events: List[LogEvent]) -> List[DependencyEdge]:
+    dependencies = []
+    seenEdges = set()
+
+    errorEvents = []
+
+    for event in events:
+        if event.severity in ["WARN", "ERROR"] and event.service is not None:
+            errorEvents.append(event)
+
+    for i in range(len(errorEvents) - 1):
+        currentEvent = errorEvents[i]
+        nextEvent = errorEvents[i + 1]
+
+        if currentEvent.service == nextEvent.service:
+            continue
+
+        edge = (currentEvent.service, nextEvent.service)
+
+        if edge not in seenEdges:
+            dependencies.append(
+                DependencyEdge(
+                    source=currentEvent.service,
+                    target=nextEvent.service,
+                )
+            )
+            seenEdges.add(edge)
+
+    return dependencies
+
+def detectCascade(events: List[LogEvent]) -> bool:
+    affected_services = set()
+
+    for event in events:
+        if event.severity in ["WARN", "ERROR"] and event.service is not None:
+            affected_services.add(event.service)
+
+    return len(affected_services) >= 3
+
 def analyzeEvents(events: List[LogEvent]) -> AnalysisResponse:
     summary = summarizeEvents(events)
 
@@ -118,6 +157,8 @@ def analyzeEvents(events: List[LogEvent]) -> AnalysisResponse:
         rootCause = guessCause(events),
         timeline=buildTimeline(events),
         recommendations=recommendations(events),
+        dependencies=buildServiceDependencies(events),
+        cascadeDetected=detectCascade(events),
     )
 
 def summarizeEvents(events: List[LogEvent]) -> SummaryResponse:

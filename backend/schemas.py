@@ -9,6 +9,10 @@ class LogEvent(BaseModel):
     message: str
     raw: str
 
+class DependencyEdge(BaseModel):
+    source: str
+    target: str
+
 
 class ParseResponse(BaseModel):
     eventCount: int
@@ -32,6 +36,8 @@ class AnalysisResponse(BaseModel):
     rootCause: str
     timeline: List[TimeLineItem]
     recommendations: List[str]
+    dependencies: List[DependencyEdge]
+    cascadeDetected: bool
 
 class SummaryResponse(BaseModel):
     totalEvents: int

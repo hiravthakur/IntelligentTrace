@@ -1,5 +1,6 @@
 import { useState } from "react";
 import "./App.css";
+import DependencyGraph from "./components/DependencyGraph";
 
 function App() {
   const [file, setFile] = useState(null);
@@ -93,6 +94,20 @@ function App() {
             <h2>Likely Root Cause</h2>
             <p>{analysis.rootCause}</p>
           </section>
+
+          {analysis.dependencies && analysis.dependencies.length > 0 && (
+          <section className="card">
+            <h2>Service Dependency Graph</h2>
+
+            {analysis.cascadeDetected && (
+              <p className="cascade-alert">
+                Potential cascading failure detected across multiple services.
+              </p>
+            )}
+
+            <DependencyGraph analysis={analysis} />
+          </section>
+        )}
 
           <section className="card">
             <h2>Incident Timeline</h2>
