@@ -1,0 +1,29 @@
+from fastapi import FastAPI, UploadFile, File
+from schemas import ParseResponse
+from parser import parseLogs
+
+app = FastAPI(title = "IntelligentTrace API")
+
+@app.get("/")
+
+def root():
+    return {"message": "Backend is working"}
+
+@app.post("/parse", response_model = ParseResponse)
+
+async def parseFile(file: UploadFile = File(...)):
+    content = await file.read()
+
+    text = content.decode("utf-8", errors = "ignore")
+
+    events = parseLogs(text)
+
+    services = sorted(
+        list({event.service for event in events if event.service is not None})
+    )
+
+    return ParseResponse(
+        eventCount = len(events),
+        services = services,
+        events = events
+    )
