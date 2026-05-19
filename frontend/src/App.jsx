@@ -72,17 +72,42 @@ function App() {
           </section>
 
           <section className="card">
+                <h2>Service Health</h2>
+              <div className="service-list">
+                {Object.entries(analysis.serviceCounts).map(([service, count]) => (
+                  <div className="service-row" key={service}>
+                    <span>{service}</span>
+                    <div className="bar">
+                      <div
+                        className="bar-fill"
+                        style={{ width: `${(count / analysis.totalEvents) * 100}%` }}
+                      />
+                    </div>
+                    <strong>{count}</strong>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+          <section className="card">
             <h2>Likely Root Cause</h2>
             <p>{analysis.rootCause}</p>
           </section>
 
           <section className="card">
             <h2>Incident Timeline</h2>
-            <ul>
-              {analysis.timeline.map((item, index) => (
-                <li key={index}>{item}</li>
-              ))}
-            </ul>
+             <div className="timeline">
+               {analysis.timeline.map((item, index) => (
+                <div className="timeline-item" key={index}>
+                 <span className="time">{item.timestamp}</span>
+               <span className={`badge ${item.severity.toLowerCase()}`}>
+               {item.severity}
+               </span>
+             <span className="service-tag">{item.service}</span>
+        <p>{item.message}</p>
+      </div>
+    ))}
+  </div>
           </section>
 
           <section className="card">
