@@ -1,5 +1,5 @@
 from typing import List, Dict, Optional
-from schemas import LogEvent, AnalysisResponse, SummaryResponse
+from schemas import LogEvent, AnalysisResponse, SummaryResponse, TimeLineItem
 
 def countBySeverity(events: List[LogEvent], severity: str) -> int:
     temp = 0
@@ -30,17 +30,20 @@ def getMostAffected(serviceCounts: Dict[str, int]) -> Optional[str]:
     
     return max(serviceCounts, key = serviceCounts.get)
 
-def buildTimeline(events: List[LogEvent]) -> List[str]:
+def buildTimeline(events: List[LogEvent]) -> List[TimeLineItem]:
     timeline = []
 
-    for x in events:
-        if x.severity in ["ERROR", "WARN"]:
-           timestamp = x.timestamp or 'Unknown Time'
+    for event in events:
+        if event.severity in ["WARN", "ERROR"]:
+            timeline.append(
+                TimeLineItem(
+                    timestamp = event.timestamp or "unknown time",
+                    severity = event.severity,
+                    service = event.service or "unknown service",
+                    message = event.message,
+                )
+            )
 
-           service = x.service or 'Unknown Service'
-
-           timeline.append(f"{timestamp} ||| {x.severity} ||| {service} ||| {x.message}")
-    
     return timeline
 
 #generic function to provide root cause, can be expanded later with more complex logic or ML models

@@ -15,6 +15,12 @@ class ParseResponse(BaseModel):
     services: List[str]
     events: List[LogEvent]
 
+class TimeLineItem(BaseModel):
+    timestamp: str
+    severity: str
+    service: str
+    message: str
+
 class AnalysisResponse(BaseModel):
     totalEvents: int
     errorCount: int
@@ -24,7 +30,7 @@ class AnalysisResponse(BaseModel):
     serviceCounts: Dict[str, int]
     mostAffectedService: Optional[str]
     rootCause: str
-    timeline: List[str]
+    timeline: List[TimeLineItem]
     recommendations: List[str]
 
 class SummaryResponse(BaseModel):
@@ -35,4 +41,3 @@ class SummaryResponse(BaseModel):
     services: List[str]
     serviceCounts: Dict[str, int]
     mostAffectedService: Optional[str]
-
