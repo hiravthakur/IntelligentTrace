@@ -2,8 +2,17 @@ from fastapi import FastAPI, UploadFile, File
 from schemas import ParseResponse, AnalysisResponse, SummaryResponse
 from parser import parseLog
 from analyzer import analyzeEvents, summarizeEvents
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(title = "IntelligentTrace API")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5174", "http://127.0.0.1:5174"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.get("/")
 
