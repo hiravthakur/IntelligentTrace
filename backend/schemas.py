@@ -9,6 +9,12 @@ class LogEvent(BaseModel):
     message: str
     raw: str
 
+class AIReportResponse(BaseModel):
+    executiveSummary: str
+    technicalSummary: str
+    likelyRootCause: str
+    recommendedActions: List[str]
+
 class DependencyEdge(BaseModel):
     source: str
     target: str

@@ -5,28 +5,54 @@ import DependencyGraph from "./components/DependencyGraph";
 function App() {
   const [file, setFile] = useState(null);
   const [analysis, setAnalysis] = useState(null);
+  const [aiReport, setAiReport] = useState(null);
   const [loading, setLoading] = useState(false);
 
   async function analyzeFile() {
-    if (!file) {
-      alert("Choose a log file first");
-      return;
-    }
-
-    setLoading(true);
-
-    const formData = new FormData();
-    formData.append("file", file);
-
-    const response = await fetch("http://127.0.0.1:8000/analyze", {
-      method: "POST",
-      body: formData,
-    });
-
-    const data = await response.json();
-    setAnalysis(data);
-    setLoading(false);
+  if (!file) {
+    alert("Choose a log file first");
+    return;
   }
+
+  setLoading(true);
+
+  const formData = new FormData();
+  formData.append("file", file);
+
+  try {
+    const analysisResponse = await fetch(
+      "http://127.0.0.1:8000/analyze",
+      {
+        method: "POST",
+        body: formData,
+      }
+    );
+
+    const analysisData = await analysisResponse.json();
+
+    setAnalysis(analysisData);
+
+    const aiFormData = new FormData();
+    aiFormData.append("file", file);
+
+    const aiResponse = await fetch(
+      "http://127.0.0.1:8000/ai-report",
+      {
+        method: "POST",
+        body: aiFormData,
+      }
+    );
+
+    const aiData = await aiResponse.json();
+
+    setAiReport(aiData);
+  } catch (error) {
+    console.error(error);
+    alert("Failed to analyze logs");
+  }
+
+  setLoading(false);
+}
 
   return (
     <main className="container">
@@ -124,15 +150,37 @@ function App() {
     ))}
   </div>
           </section>
+        
+        {aiReport && (
+  <section className="card">
+    <h2>AI Incident Report</h2>
 
-          <section className="card">
-            <h2>Recommendations</h2>
-            <ul>
-              {analysis.recommendations.map((item, index) => (
-                <li key={index}>{item}</li>
-              ))}
-            </ul>
-          </section>
+    <div className="ai-section">
+      <h3>Executive Summary</h3>
+      <p>{aiReport.executiveSummary}</p>
+    </div>
+
+    <div className="ai-section">
+      <h3>Technical Summary</h3>
+      <p>{aiReport.technicalSummary}</p>
+    </div>
+
+    <div className="ai-section">
+      <h3>Likely Root Cause</h3>
+      <p>{aiReport.likelyRootCause}</p>
+    </div>
+
+    <div className="ai-section">
+      <h3>Recommended Actions</h3>
+
+      <ul>
+        {aiReport.recommendedActions.map((item, index) => (
+          <li key={index}>{item}</li>
+        ))}
+      </ul>
+    </div>
+  </section>
+)}
         </>
       )}
     </main>

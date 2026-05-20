@@ -181,3 +181,12 @@ li {
   margin-bottom: 16px;
   font-weight: bold;
 }
+
+.ai-section {
+  margin-bottom: 24px;
+}
+
+.ai-section h3 {
+  margin-bottom: 8px;
+  color: #93c5fd;
+}
