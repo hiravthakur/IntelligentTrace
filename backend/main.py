@@ -1,14 +1,15 @@
 from fastapi import FastAPI, UploadFile, File
-from schemas import ParseResponse, AnalysisResponse, SummaryResponse
+from schemas import ParseResponse, AnalysisResponse, SummaryResponse, AIReportResponse
 from parser import parseLog
 from analyzer import analyzeEvents, summarizeEvents
 from fastapi.middleware.cors import CORSMiddleware
+from ai_report import generate_ai_report
 
 app = FastAPI(title = "IntelligentTrace API")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5174", "http://127.0.0.1:5174"],
+    allow_origins=["http://localhost:5174", "http://127.0.0.1:5174", "http://localhost:5173", "http://127.0.0.1:5173"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -38,6 +39,16 @@ async def summarizeFile(file: UploadFile = File(...)):
     events = parseLog(text)
 
     return summarizeEvents(events)
+
+@app.post("/ai-report", response_model=AIReportResponse)
+async def aiReportFile(file: UploadFile = File(...)):
+    content = await file.read()
+    text = content.decode("utf-8", errors="ignore")
+
+    events = parseLog(text)
+    analysis = analyzeEvents(events)
+
+    return generate_ai_report(analysis)
 
 async def parseFile(file: UploadFile = File(...)):
     content = await file.read()
